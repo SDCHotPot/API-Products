@@ -1,6 +1,13 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+require('dotenv').config();
+
+const connection = mongoose.connect(process.env.MONGOURL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
 const productSchema = new Schema({
   _id: Number,
   name: String,
@@ -15,9 +22,11 @@ const productSchema = new Schema({
     feature: String,
     value: String
   }
-})
+});
 
-const stylesSchema = new Schema({
+const Product = mongoose.model('Product', productSchema);
+
+const styleSchema = new Schema({
   _id: Number,
   product_id: Number,
   name: String,
@@ -30,8 +39,10 @@ const stylesSchema = new Schema({
     size: String
   },
   photos: Array
-})
+});
 
-const Product = mongoose.model('Product', productSchema);
-const Styles = mongoose.model('Styles', stylesSchema);
+const Style = mongoose.model('Style', stylesSchema);
 
+exports.connection = connection;
+exports.Product = Product;
+exports.Style = Style;
