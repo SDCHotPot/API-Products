@@ -14,8 +14,8 @@ CREATE TABLE products (
   description     text,
   category        varchar(255),
   default_price   int,
-  created_at      varchar(50) DEFAULT CURRENT_TIMESTAMP,
-  updated_at      varchar(50) DEFAULT CURRENT_TIMESTAMP
+  created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 \COPY products (id, name, slogan, description, category, default_price) FROM 'dbms/data/product.csv' delimiter ',' csv header;
@@ -24,10 +24,12 @@ CREATE TABLE product_styles (
   style_id        int PRIMARY KEY,
   product_id      int,
   name            varchar(255),
-  original_price  int,
-  sale_price      int,
+  original_price  varchar(255),
+  sale_price      varchar(255),
   default_style   boolean
 );
+
+CREATE INDEX style_idx ON product_styles (product_id);
 
 \COPY product_styles FROM 'dbms/data/styles.csv' WITH (FORMAT CSV, HEADER, DELIMITER ',', FORCE_NULL (original_price));
 
@@ -38,6 +40,8 @@ CREATE TABLE skus (
   quantity        int
 );
 
+CREATE INDEX sku_idx ON skus (style_id) INCLUDE (size, quantity);
+
 \COPY skus FROM 'dbms/data/skus.csv' delimiter ',' csv header;
 
 CREATE TABLE photos (
@@ -46,6 +50,8 @@ CREATE TABLE photos (
   thumbnail_url   text,
   url             text
 );
+
+CREATE INDEX photos_idx ON photos (style_id) INCLUDE (thumbnail_url, url);
 
 \COPY photos FROM 'dbms/data/photos.csv' delimiter ',' csv header;
 
@@ -56,6 +62,8 @@ CREATE TABLE features (
   value           varchar(255)
 );
 
+CREATE INDEX feat_idx ON features (product_id) INCLUDE (features, value);
+
 \COPY features FROM 'dbms/data/features.csv' delimiter ',' csv header;
 
 CREATE TABLE related (
@@ -63,5 +71,9 @@ CREATE TABLE related (
   curr_prod_id    int,
   rel_prod_id     int
 );
+
+CREATE INDEX rel_idx ON related (
+  curr_prod_id
+) INCLUDE (rel_prod_id);
 
 \COPY related FROM 'dbms/data/related.csv' delimiter ',' csv header;
