@@ -1,24 +1,18 @@
 const { dbms } = require('./db.js');
 
 const productQuery = (id) => (
-  Promise.all([
-    dbms.query(
-      `SELECT p.*
-      FROM products p
-      WHERE p.id = ${id};`
-    ),
-    dbms.query(
-      `SELECT f.feature, f.value
+  dbms.query(
+    `SELECT p.*,
+    (SELECT json_agg(
+      json_build_object(
+        "feature", f.feature,
+        "value", f.value))
       FROM features f
-      WHERE f.product_id = ${id};`
-    )
-  ])
-    .then((results) => {
-      const product = results[0].rows[0];
-      product.features = results[1].rows;
-      return product;
-    })
-);
+      WHERE f.product_id = ${id}) features
+    FROM products p
+    WHERE p.id = ${id}`
+  ).then((results) => results.rows)
+)
 
 const relatedQuery = (id) => (
   dbms.query(
