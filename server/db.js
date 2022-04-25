@@ -1,11 +1,11 @@
-const { Pool, Client } = require('pg');
+const { Pool } = require('pg');
 
 const dbms = new Pool({
   host: 'localhost',
   user: 'postgres',
   password: 'postgres',
   database: 'api_product',
-  port: 5432
+  port: 5432,
 });
 
 dbms.connect();

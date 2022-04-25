@@ -25,3 +25,5 @@ dbms/mongo/
 dbms/data/
 
 queries.txt
+
+script.js

@@ -1,10 +1,9 @@
 const express = require('express');
 const path = require('path');
 const { dbms } = require('./db.js');
-const { productQuery, relatedQuery, stylesQuery } = require('./queries.js');
+const { productsQuery, productQuery, relatedQuery, stylesQuery } = require('./queries.js');
 
 require('dotenv').config();
-
 
 const app = express();
 const PORT = process.env.PORT;
@@ -14,6 +13,13 @@ app.use(express.json());
 app.use('*', (req, res, next) => {
   console.log(`${req.method} at ${req.path}`);
   next();
+})
+
+app.get('/products', (req, res) => {
+  const page = req.body.page || 1;
+  const count = req.body.count || 5;
+  productsQuery(page, count)
+    .then((results) => res.send(results))
 })
 
 app.get('/products/:pId', (req, res) => {
